@@ -9,6 +9,8 @@ const bodyParser = require('koa-bodyparser');   /* 引入 koa-bodyparser, 由于
 const controller = require('./controller');     /* 引入控制器模块（函数） */
 const templating = require('./templating');
 
+const axios = require('./axios.min.js');
+
 const app = new Koa();                          /* 创建 koa 实例 */
 
 const isProduction = process.env.NODE_ENV === 'production';     /* 是否是生产环境 */
@@ -42,6 +44,25 @@ app.use(templating('views', {
 
 /* 执行控制器 */
 app.use(controller());
+
+setInterval(function(){
+    const postData = {
+        time: '2020/12/20',
+        tmpt: '30 ℃' 
+    }
+    axios.post('http://localhost:3001/sensor/?send=data', postData)
+    .then(function (response) {
+        // handle success
+        console.log(response.data);
+    })
+    .catch(function (error) {
+        // handle error
+        console.log(error);
+    })
+    .then(function () {
+        // always executed
+    });
+},1000)
 
 /* 监听端口 */
 const port = process.env.PORT || 3000;
